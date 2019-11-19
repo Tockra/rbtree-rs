@@ -1042,6 +1042,25 @@ impl<K: Ord, V> RBTree<K, V> {
         }
     }
 
+    /// returns the biggest value l<=k which is in the tree
+    #[inline]
+    pub fn predecessor( & self, key: K ) -> Option<&V> {
+        let mut x = self.root;
+        let mut curr_pred = None;
+        while x.0 != std::ptr::null_mut() {
+            let k =  unsafe { &(*(x.0)).key };
+            if &key == k {
+                return Some(unsafe { &(*(x.0)).value });
+            } else if &key < k {
+                x = unsafe { (*(x.0)).left };
+            } else {
+                curr_pred = Some(unsafe { &(*(x.0)).value });
+                x = unsafe { (*(x.0)).right };         
+            }
+        }
+        curr_pred
+    }
+
     #[inline]
     fn find_node(&self, k: &K) -> NodePtr<K, V> {
         if self.root.is_null() {
